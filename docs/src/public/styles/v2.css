@@ -1,0 +1,110 @@
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 10px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body {
+  --body-color: #252423;
+  --body-bg: rgba(243, 242, 240);
+
+  --sidebar-width: 320px;
+
+  padding: 0;
+  margin: 0;
+  color: var(--body-color);
+  font-size: 1.4rem;
+  background: var(--body-bg);
+  height: 100vh;
+}
+
+/* =============================================== */
+/*                    Components                   */
+/* =============================================== */
+
+/* ---------------------------------
+           Button
+--------------------------------- */
+
+button.v2 {
+  transition: background 2s, box-shadow 2s;
+  padding: 0.7rem 1.4rem;
+  font-size: 1.4rem;
+  border: 0;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+/* primary */
+
+.v2-primary-button {
+  color: #fff;
+  background: #2d2c2c;
+  box-shadow: 0 0.2rem 0.4rem -0.075rem rgba(0, 0, 0, 0.25);
+}
+
+.v2-primary-button:hover {
+  background: #11100f;
+  box-shadow: 0 0.2rem 0.8rem -0.075rem rgba(0, 0, 0, 0.5);
+}
+
+/* Link */
+
+.v2-link-button {
+  background: none;
+}
+.v2-link-button:hover {
+  background: none;
+  color: #000;
+}
+
+/* ---------------------------------
+           List
+--------------------------------- */
+ul,
+ol {
+  padding: 0;
+  margin: 0;
+}
+
+.v2-inline-list {
+  list-style-type: none;
+}
+
+.v2-inline-list li {
+  display: inline;
+}
+
+/* =============================================== */
+/*                      Pages                      */
+/* =============================================== */
+
+/* ---------------------------------
+           Sidebar Layout
+--------------------------------- */
+
+.v2-sidebar-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.v2-sidebar-layout__sidebar {
+  flex: 0 0 auto;
+  padding: 2rem;
+  width: var(--sidebar-width);
+  overflow-y: scroll;
+}
+
+.v2-sidebar-layout__view {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: scroll;
+  background: #ffffff;
+}

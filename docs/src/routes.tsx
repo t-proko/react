@@ -21,10 +21,16 @@ import AccessibilityBehaviors from './views/AccessibilityBehaviors'
 import FocusZone from './views/FocusZone'
 import FocusTrapZone from './views/FocusTrapZone'
 import AutoFocusZone from './views/AutoFocusZone'
+import Home from './v2/views/Home'
+import Components from './v2/views/Components'
+import SidebarLayout from './v2/Layouts/SidebarLayout'
+import RootLayout from 'docs/src/v2/Layouts/RootLayout'
 
 const Router = () => (
   <BrowserRouter basename={__BASENAME__}>
     <Switch>
+      <RootLayout exact path="/v2" component={Home} />
+      <SidebarLayout exact path="/v2/components" component={Components} />
       <Route exact path="/maximize/:exampleName/:rtl?" component={ExternalExampleLayout} />
       <Switch>
         <DocsLayout exact path="/" component={Introduction} />
@@ -43,7 +49,6 @@ const Router = () => (
             path="/prototype-chat-messages"
             component={require('./prototypes/chatMessages/index').default}
           />,
-          ,
           <DocsLayout
             exact
             key="/prototype-async-shorthand"

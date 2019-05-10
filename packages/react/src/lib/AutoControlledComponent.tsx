@@ -182,6 +182,29 @@ export default class AutoControlledComponent<P = {}, S = {}> extends UIComponent
     return newState
   }
 
+  // constructor(props) {
+  //   super(props)
+  //
+  //   const mgr = createStateManager({
+  //     middleware: [
+  //       () => (prevState, nextState) => {
+  //         return AutoControlledComponent.getDerivedStateFromProps(this.props, this.state)
+  //       }
+  //     ]
+  //   })
+  //
+  //   // beginning state: state.open = true
+  //   mgr.actions.close()
+  //   // action: state.open = false
+  //   // onClose({ open: proposedOpen (ie. false) })
+  //   // ...middleware
+  //   // middleware: for ac props, override state[prop] = props[prop]
+  //   //             <Modal open /> results in state.open = true, no matter what actions preceeded this middleware
+  //   // ...side effects
+  //   // render
+  // }
+
+
   /**
    * Safely attempt to set state for props that might be controlled by the user.
    * Second argument is a state object that is always passed to setState.
