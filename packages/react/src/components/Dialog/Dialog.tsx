@@ -1,5 +1,7 @@
 import { Ref } from '@stardust-ui/react-component-ref'
 import * as customPropTypes from '@stardust-ui/react-proptypes'
+import { useStateManager } from '@stardust-ui/react-state'
+import { createDialogManager } from '@stardust-ui/state'
 import * as _ from 'lodash'
 import * as PropTypes from 'prop-types'
 import * as React from 'react'
@@ -9,39 +11,19 @@ import {
   commonPropTypes,
   ColorComponentProps,
   ContentComponentProps,
-  AutoControlledComponent,
   doesNodeContainClick,
   applyAccessibilityKeyHandlers,
 } from '../../lib'
 import { dialogBehavior } from '../../lib/accessibility'
 import { FocusTrapZoneProps } from '../../lib/accessibility/FocusZone'
 import { Accessibility } from '../../lib/accessibility/types'
-import { ComponentEventHandler, WithAsProp, ShorthandValue, withSafeTypeForAs } from '../../types'
+import { ComponentEventHandler, ShorthandValue } from '../../types'
 import Button, { ButtonProps } from '../Button/Button'
 import Box, { BoxProps } from '../Box/Box'
 import Header from '../Header/Header'
 import Portal from '../Portal/Portal'
 import Flex from '../Flex/Flex'
-
-const getOrGenerateIdFromShorthand = (
-  slotName: string,
-  value: ShorthandValue,
-  currentValue?: string,
-): string | undefined => {
-  if (_.isNil(value)) {
-    return undefined
-  }
-
-  if (React.isValidElement(value)) {
-    return (value as React.ReactElement<{ id?: string }>).props.id
-  }
-
-  if (_.isPlainObject(value)) {
-    return (value as Record<string, any>).id
-  }
-
-  return currentValue || _.uniqueId(`dialog-${slotName}-`)
-}
+import createComponent from 'src/lib/createComponent'
 
 export interface DialogSlotClassNames {
   header: string
@@ -107,22 +89,24 @@ export interface DialogProps
   trigger?: JSX.Element
 }
 
-export interface DialogState {
-  contentId?: string
-  headerId?: string
-  open?: boolean
+const slotClassNames: DialogSlotClassNames = {
+  header: `ui-dialog__header`,
+  content: `'ui-dialog__content`,
 }
 
-/**
- * A Dialog informs users about specific tasks or may contain critical information, require decisions, or involve multiple interactions.
- */
-class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogState> {
-  static displayName = 'Dialog'
-  static className = 'ui-dialog'
+const Dialog = createComponent<DialogProps>({
+  actionHandlers: {
+    closeAndFocusTrigger: e => {
+      this.handleDialogCancel(e)
+      e.stopPropagation()
 
-  static slotClassNames: DialogSlotClassNames
-
-  static propTypes = {
+      _.invoke(this.triggerRef, 'current.focus')
+    },
+    close: e => this.handleDialogCancel(e), // What we can do?
+  },
+  displayName: 'Dialog',
+  className: 'ui-dialog',
+  propTypes: {
     ...commonPropTypes.createCommon({
       children: false,
       content: 'shorthand',
@@ -140,86 +124,14 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
     overlay: customPropTypes.itemShorthand,
     trapFocus: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
     trigger: PropTypes.any,
-  }
-
-  static defaultProps = {
+  } as any,
+  defaultProps: {
     accessibility: dialogBehavior,
     actions: {},
     overlay: {},
     trapFocus: true,
-  }
-
-  static autoControlledProps = ['open']
-
-  actionHandlers = {
-    closeAndFocusTrigger: e => {
-      this.handleDialogCancel(e)
-      e.stopPropagation()
-
-      _.invoke(this.triggerRef, 'current.focus')
-    },
-    close: e => this.handleDialogCancel(e),
-  }
-  contentRef = React.createRef<HTMLElement>()
-  triggerRef = React.createRef<HTMLElement>()
-
-  getInitialAutoControlledState(): DialogState {
-    return {
-      open: false,
-    }
-  }
-
-  static getAutoControlledStateFromProps(
-    props: DialogProps,
-    state: DialogState,
-  ): Partial<DialogState> {
-    return {
-      contentId: getOrGenerateIdFromShorthand('content', props.content, state.contentId),
-      headerId: getOrGenerateIdFromShorthand('header', props.header, state.headerId),
-    }
-  }
-
-  handleDialogCancel = (e: Event | React.SyntheticEvent) => {
-    _.invoke(this.props, 'onCancel', e, { ...this.props, open: false })
-    this.trySetState({ open: false })
-  }
-
-  handleDialogConfirm = (e: React.SyntheticEvent) => {
-    _.invoke(this.props, 'onConfirm', e, { ...this.props, open: false })
-    this.trySetState({ open: false })
-  }
-
-  handleDialogOpen = (e: React.SyntheticEvent) => {
-    _.invoke(this.props, 'onOpen', e, { ...this.props, open: true })
-    this.trySetState({ open: true })
-  }
-
-  handleCancelButtonOverrides = (predefinedProps: ButtonProps) => ({
-    onClick: (e: React.SyntheticEvent, buttonProps: ButtonProps) => {
-      _.invoke(predefinedProps, 'onClick', e, buttonProps)
-      this.handleDialogCancel(e)
-    },
-  })
-
-  handleConfirmButtonOverrides = (predefinedProps: ButtonProps) => ({
-    onClick: (e: React.SyntheticEvent, buttonProps: ButtonProps) => {
-      _.invoke(predefinedProps, 'onClick', e, buttonProps)
-      this.handleDialogConfirm(e)
-    },
-  })
-
-  handleOverlayOverrides = (content: JSX.Element) => (predefinedProps: BoxProps) => ({
-    content,
-    onClick: (e: React.SyntheticEvent, overlayProps: BoxProps) => {
-      _.invoke(predefinedProps, 'onClick', e, overlayProps)
-
-      if (!doesNodeContainClick(this.contentRef.current, e)) {
-        this.handleDialogCancel(e)
-      }
-    },
-  })
-
-  renderComponent({ accessibility, classes, ElementType, styles, unhandledProps }) {
+  },
+  render: ({ accessibility, classes, ElementType, styles, unhandledProps }, props) => {
     const {
       actions,
       confirmButton,
@@ -229,11 +141,56 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
       overlay,
       trapFocus,
       trigger,
-    } = this.props
-    const { open } = this.state
+    } = props
+
+    console.log('render:', props.open)
+    const manager = useStateManager(createDialogManager, { open: props.open })
+    console.log('manager.state', manager.state.open)
+    const contentRef = React.useRef<HTMLElement>()
+    const triggerRef = React.useRef<HTMLElement>()
+
+    const handleDialogCancel = (e: Event | React.SyntheticEvent) => {
+      _.invoke(props, 'onCancel', e, { ...props, open: false })
+      manager.actions.close()
+    }
+
+    const handleDialogConfirm = (e: React.SyntheticEvent) => {
+      _.invoke(props, 'onConfirm', e, { ...props, open: false })
+      manager.actions.close()
+    }
+
+    const handleDialogOpen = (e: React.SyntheticEvent) => {
+      _.invoke(props, 'onOpen', e, { ...props, open: true })
+      manager.actions.open()
+    }
+
+    const handleCancelButtonOverrides = (predefinedProps: ButtonProps) => ({
+      onClick: (e: React.SyntheticEvent, buttonProps: ButtonProps) => {
+        _.invoke(predefinedProps, 'onClick', e, buttonProps)
+        handleDialogCancel(e)
+      },
+    })
+
+    const handleConfirmButtonOverrides = (predefinedProps: ButtonProps) => ({
+      onClick: (e: React.SyntheticEvent, buttonProps: ButtonProps) => {
+        _.invoke(predefinedProps, 'onClick', e, buttonProps)
+        handleDialogConfirm(e)
+      },
+    })
+
+    const handleOverlayOverrides = (content: JSX.Element) => (predefinedProps: BoxProps) => ({
+      content,
+      onClick: (e: React.SyntheticEvent, overlayProps: BoxProps) => {
+        _.invoke(predefinedProps, 'onClick', e, overlayProps)
+
+        if (!doesNodeContainClick(contentRef.current, e)) {
+          handleDialogCancel(e)
+        }
+      },
+    })
 
     const dialogContent = (
-      <Ref innerRef={this.contentRef}>
+      <Ref innerRef={contentRef}>
         <ElementType
           className={classes.root}
           {...accessibility.attributes.popup}
@@ -243,7 +200,7 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
           {Header.create(header, {
             defaultProps: {
               as: 'h2',
-              className: Dialog.slotClassNames.header,
+              className: slotClassNames.header,
               styles: styles.header,
               ...accessibility.attributes.header,
             },
@@ -251,7 +208,7 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
           {Box.create(content, {
             defaultProps: {
               styles: styles.content,
-              className: Dialog.slotClassNames.content,
+              className: slotClassNames.content,
               ...accessibility.attributes.content,
             },
           })}
@@ -263,12 +220,12 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
             overrideProps: {
               content: (
                 <Flex gap="gap.smaller" hAlign="end">
-                  {Button.create(cancelButton, { overrideProps: this.handleCancelButtonOverrides })}
+                  {Button.create(cancelButton, { overrideProps: handleCancelButtonOverrides })}
                   {Button.create(confirmButton, {
                     defaultProps: {
                       primary: true,
                     },
-                    overrideProps: this.handleConfirmButtonOverrides,
+                    overrideProps: handleConfirmButtonOverrides,
                   })}
                 </Flex>
               ),
@@ -284,32 +241,25 @@ class Dialog extends AutoControlledComponent<WithAsProp<DialogProps>, DialogStat
 
     return (
       <Portal
-        onTriggerClick={this.handleDialogOpen}
-        open={open}
+        onTriggerClick={handleDialogOpen}
+        open={manager.state.open}
         trapFocus={trapFocus}
         trigger={trigger}
         triggerAccessibility={triggerAccessibility}
-        triggerRef={this.triggerRef}
+        triggerRef={triggerRef}
       >
         {Box.create(overlay, {
           defaultProps: {
             styles: styles.overlay,
           },
-          overrideProps: this.handleOverlayOverrides(dialogContent),
+          overrideProps: handleOverlayOverrides(dialogContent),
         })}
       </Portal>
     )
-  }
-}
-
-Dialog.slotClassNames = {
-  header: `${Dialog.className}__header`,
-  content: `${Dialog.className}__content`,
-}
+  },
+})
 
 /**
- * A Dialog displays important information on top of a page which usually requires user's attention, confirmation or interaction.
- * @accessibility
- * Implements [ARIA Dialog (Modal)](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal) design pattern.
+ * A Dialog indicates a possible user action.
  */
-export default withSafeTypeForAs<typeof Dialog, DialogProps>(Dialog)
+export default Dialog
