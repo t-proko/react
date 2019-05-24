@@ -76,7 +76,7 @@ class Reaction extends UIComponent<WithAsProp<ReactionProps>, ReactionState> {
     as: 'span',
   }
 
-  static Group = ReactionGroup
+  static Group: typeof ReactionGroup = ReactionGroup
 
   public state = {
     isFromKeyboard: false,

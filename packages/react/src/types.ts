@@ -102,14 +102,6 @@ type HoistedStaticPropsOf<T> =
   | Exclude<keyof T, keyof React.ComponentType | 'prototype'>
   | 'displayName'
 
-type Intersect<First extends string | number | symbol, Second extends string | number | symbol> = {
-  [K in First]: K extends Second ? K : never
-}[First]
-
-type PickProps<T, Props extends string | number | symbol> = {
-  [K in Intersect<Props, keyof T>]: T[K]
-}
-
 export const withSafeTypeForAs = function<
   TComponentType extends React.ComponentType,
   TProps,
@@ -130,13 +122,13 @@ export const withSafeTypeForAs = function<
   }
 
   return (componentType as any) as typeof overloadedComponentType &
-    PickProps<TComponentType, HoistedStaticPropsOf<TComponentType>>
+    Pick<TComponentType, HoistedStaticPropsOf<TComponentType>>
 }
 
 export type UNSAFE_TypedComponent<TComponentType, TProps> = React.FunctionComponent<
   TProps & { [K: string]: any }
 > &
-  PickProps<TComponentType, keyof TComponentType>
+  Pick<TComponentType, keyof TComponentType>
 
 export const UNSAFE_typed = <TComponentType>(componentType: TComponentType) => {
   return {

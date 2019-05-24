@@ -121,8 +121,8 @@ class Menu extends AutoControlledComponent<WithAsProp<MenuProps>, MenuState> {
 
   static autoControlledProps = ['activeIndex']
 
-  static Item = MenuItem
-  static Divider = MenuDivider
+  static Item: typeof MenuItem = MenuItem
+  static Divider: typeof MenuDivider = MenuDivider
 
   handleItemOverrides = predefinedProps => ({
     onClick: (e, itemProps) => {

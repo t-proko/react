@@ -108,7 +108,7 @@ class Button extends UIComponent<WithAsProp<ButtonProps>, ButtonState> {
     accessibility: buttonBehavior as Accessibility,
   }
 
-  static Group = ButtonGroup
+  static Group: typeof ButtonGroup = ButtonGroup
 
   public state = {
     isFromKeyboard: false,

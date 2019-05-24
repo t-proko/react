@@ -136,7 +136,7 @@ export default class Popup extends AutoControlledComponent<PopupProps, PopupStat
     content: `${Popup.className}__content`,
   }
 
-  static Content = PopupContent
+  static Content: typeof PopupContent = PopupContent
 
   static propTypes = {
     ...commonPropTypes.createCommon({

@@ -63,7 +63,7 @@ class Header extends UIComponent<WithAsProp<HeaderProps>, any> {
     as: 'h1',
   }
 
-  static Description = HeaderDescription
+  static Description: typeof HeaderDescription = HeaderDescription
 
   renderComponent({ accessibility, ElementType, classes, variables: v, unhandledProps }) {
     const { children, description, content } = this.props

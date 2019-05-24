@@ -79,7 +79,7 @@ class RadioGroup extends AutoControlledComponent<WithAsProp<RadioGroupProps>, an
 
   static autoControlledProps = ['checkedValue']
 
-  static Item = RadioGroupItem
+  static Item: typeof RadioGroupItem = RadioGroupItem
 
   renderComponent({ ElementType, classes, accessibility, unhandledProps }) {
     const { children, vertical } = this.props

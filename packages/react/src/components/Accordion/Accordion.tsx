@@ -132,8 +132,8 @@ class Accordion extends AutoControlledComponent<WithAsProp<AccordionProps>, Acco
 
   static autoControlledProps = ['activeIndex']
 
-  static Title = AccordionTitle
-  static Content = AccordionContent
+  static Title: typeof AccordionTitle = AccordionTitle
+  static Content: typeof AccordionContent = AccordionContent
 
   private focusHandler: ContainerFocusHandler = null
   private itemRefs = []

@@ -14,7 +14,7 @@ import { Accessibility } from '../../lib/accessibility/types'
 import { defaultBehavior } from '../../lib/accessibility'
 import { WithAsProp, ShorthandValue, withSafeTypeForAs } from '../../types'
 import Text from '../Text/Text'
-import Input from '../Input/Input'
+import Input, { InputProps } from '../Input/Input'
 import Box from '../Box/Box'
 
 export interface FormFieldProps extends UIComponentProps, ChildrenComponentProps {
@@ -25,7 +25,7 @@ export interface FormFieldProps extends UIComponentProps, ChildrenComponentProps
   accessibility?: Accessibility
 
   /** A control for the form field. */
-  control?: ShorthandValue
+  control?: ShorthandValue<InputProps>
 
   /** The HTML input id. This will be set on the control element and will be use for linking it with the label for correct accessibility. */
   id?: string
@@ -50,13 +50,13 @@ export interface FormFieldProps extends UIComponentProps, ChildrenComponentProps
 }
 
 class FormField extends UIComponent<WithAsProp<FormFieldProps>, any> {
-  public static displayName = 'FormField'
+  static displayName = 'FormField'
 
-  public static className = 'ui-form__field'
+  static className = 'ui-form__field'
 
   static create: Function
 
-  public static propTypes = {
+  static propTypes = {
     ...commonPropTypes.createCommon({
       content: false,
     }),
@@ -70,10 +70,9 @@ class FormField extends UIComponent<WithAsProp<FormFieldProps>, any> {
     type: PropTypes.string,
   }
 
-  public static defaultProps = {
+  static defaultProps = {
     accessibility: defaultBehavior,
     as: 'div',
-    control: { as: Input },
   }
 
   public renderComponent({
@@ -83,7 +82,16 @@ class FormField extends UIComponent<WithAsProp<FormFieldProps>, any> {
     styles,
     unhandledProps,
   }): React.ReactNode {
-    const { children, control, id, label, message, name, required, type } = this.props
+    const {
+      children,
+      control = { as: Input },
+      id,
+      label,
+      message,
+      name,
+      required,
+      type,
+    } = this.props
 
     const labelElement = Text.create(label, {
       defaultProps: {

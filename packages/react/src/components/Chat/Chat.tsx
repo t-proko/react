@@ -53,8 +53,8 @@ class Chat extends UIComponent<WithAsProp<ChatProps>, any> {
     as: 'ul',
   }
 
-  static Item = ChatItem
-  static Message = ChatMessage
+  static Item: typeof ChatItem = ChatItem
+  static Message: typeof ChatMessage = ChatMessage
 
   protected actionHandlers: AccessibilityActionHandlers = {
     focus: () => this.focusZone && this.focusZone.focus(),

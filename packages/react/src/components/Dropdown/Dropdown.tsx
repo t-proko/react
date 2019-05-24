@@ -302,9 +302,9 @@ class Dropdown extends AutoControlledComponent<WithAsProp<DropdownProps>, Dropdo
     'value',
   ]
 
-  static Item = DropdownItem
-  static SearchInput = DropdownSearchInput
-  static SelectedItem = DropdownSelectedItem
+  static Item: typeof DropdownItem = DropdownItem
+  static SearchInput: typeof DropdownSearchInput = DropdownSearchInput
+  static SelectedItem: typeof DropdownSelectedItem = DropdownSelectedItem
 
   getInitialAutoControlledState({ multiple, search }: DropdownProps): DropdownState {
     return {

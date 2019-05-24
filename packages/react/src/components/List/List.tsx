@@ -98,7 +98,7 @@ class List extends AutoControlledComponent<WithAsProp<ListProps>, ListState> {
     return { selectedIndex: -1, focusedIndex: 0 }
   }
 
-  static Item = ListItem
+  static Item: typeof ListItem = ListItem
 
   // List props that are passed to each individual Item props
   static itemProps = ['debug', 'selectable', 'truncateContent', 'truncateHeader', 'variables']

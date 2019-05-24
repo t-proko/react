@@ -66,7 +66,7 @@ class Form extends UIComponent<WithAsProp<FormProps>, any> {
     as: 'form',
   }
 
-  public static Field = FormField
+  public static Field: typeof FormField = FormField
 
   public renderComponent({ accessibility, ElementType, classes, unhandledProps }): React.ReactNode {
     const { action, children } = this.props
