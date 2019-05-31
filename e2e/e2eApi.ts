@@ -1,4 +1,4 @@
-import { Page, Browser, launch } from 'puppeteer'
+import puppeteer from 'puppeteer'
 import config from '../config'
 
 const serverUrl = `http://${config.server_host}:${config.e2e_port}`
@@ -7,22 +7,21 @@ const launchOptions = {
   headless: true,
   slowMo: 10,
 
-  // Workaround for newPage hang in CircleCI: https://github.com/GoogleChrome/puppeteer/issues/1409#issuecomment-453845568
-  args: ['--single-process'],
+  args: [
+    // Workaround for newPage hang in CircleCI: https://github.com/GoogleChrome/puppeteer/issues/1409#issuecomment-453845568
+    process.env.CI && '--single-process',
+  ].filter(Boolean),
 }
 
 export class E2EApiClass {
-  private browser: Browser
-  private page: Page
+  private browser: puppeteer.Browser
+  private page: puppeteer.Page
 
   public beforeAll = async () => {
-    console.error('beforeAll', this.browser)
-    this.browser = await launch(launchOptions)
-    console.error('beforeAll', this.browser)
+    this.browser = await puppeteer.launch(launchOptions)
   }
 
   public beforeEach = async () => {
-    console.error('beforeEach', this.browser)
     this.page = await this.browser.newPage()
   }
 
@@ -67,8 +66,7 @@ export class E2EApiClass {
   public afterEach = async () => await this.page.close()
 
   public afterAll = async () => {
-    console.error('afterAll', this.browser)
-    if (this.browser) await this.browser.close()
+    await this.browser.close()
   }
 }
 
