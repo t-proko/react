@@ -16,10 +16,13 @@ export class E2EApiClass {
   private page: Page
 
   public beforeAll = async () => {
+    console.error('beforeAll', this.browser)
     this.browser = await launch(launchOptions)
+    console.error('beforeAll', this.browser)
   }
 
   public beforeEach = async () => {
+    console.error('beforeEach', this.browser)
     this.page = await this.browser.newPage()
   }
 
@@ -63,7 +66,10 @@ export class E2EApiClass {
 
   public afterEach = async () => await this.page.close()
 
-  public afterAll = async () => await this.browser.close()
+  public afterAll = async () => {
+    console.error('afterAll', this.browser)
+    if (this.browser) await this.browser.close()
+  }
 }
 
 export type E2EApi = Pick<
