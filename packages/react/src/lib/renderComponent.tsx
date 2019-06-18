@@ -42,7 +42,6 @@ export type RenderComponentCallback<P> = (config: RenderResultConfig<P>) => any
 
 export interface RenderConfig<P> {
   className?: string
-  defaultProps?: { [key: string]: any }
   displayName: string
   handledProps: string[]
   props: PropsWithVarsAndStyles
@@ -130,7 +129,6 @@ const renderComponent = <P extends {}>(
 ): React.ReactElement<P> => {
   const {
     className,
-    defaultProps,
     displayName,
     handledProps,
     props,
@@ -154,7 +152,7 @@ const renderComponent = <P extends {}>(
     componentStyles = {},
   } = (context.theme as ThemePrepared) || {}
 
-  const ElementType = getElementType({ defaultProps }, props) as React.ReactType<P>
+  const ElementType = getElementType(props) as React.ReactType<P>
 
   const stateAndProps = { ...state, ...props }
 

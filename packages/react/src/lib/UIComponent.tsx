@@ -10,7 +10,6 @@ import { FocusZone } from './accessibility/FocusZone'
 // TODO @Bugaa92: deprecated by createComponent.tsx
 class UIComponent<P, S = {}> extends React.Component<P, S> {
   readonly childClass = this.constructor as typeof UIComponent
-  static defaultProps: { [key: string]: any }
   static displayName: string
   static className: string
 
@@ -54,7 +53,6 @@ class UIComponent<P, S = {}> extends React.Component<P, S> {
     return renderComponent(
       {
         className: this.childClass.className,
-        defaultProps: this.childClass.defaultProps,
         displayName: this.childClass.displayName,
         handledProps: this.childClass.handledProps,
         props: this.props,

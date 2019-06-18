@@ -3,19 +3,26 @@ import * as React from 'react'
 
 import { getDefinedAutoControlledProps, getInitialAutoControlledState } from './stateUtils'
 
-const useStateManager = <S, A, P extends Partial<S>, C extends keyof S & string>(
-  component: React.FunctionComponent<P>,
-  createStateManager: ManagerFactory<S, A>,
-  autoControlledProps: C[],
-  props: P,
-): Manager<S, A> => {
+const useStateManager = <
+  State,
+  Actions,
+  Props extends Partial<State>,
+  AProps extends keyof State & string
+>(
+  createStateManager: ManagerFactory<State, Actions>,
+  props: Props,
+  autoControlledProps: string[],
+): Manager<State, Actions> => {
   const definedAutoControlledProps = getDefinedAutoControlledProps(autoControlledProps, props)
   const autoControlledValues = autoControlledProps.reduce(
-    (values: any[], propName: C) => [...values, props[propName]],
+    (values: any[], propName: AProps) => [...values, props[propName]],
     [],
   )
 
-  const overrideAutoControlledProps: Middleware<S, A> = (_prevState: S, nextState: S) => ({
+  const overrideAutoControlledProps: Middleware<State, Actions> = (
+    _prevState: State,
+    nextState: State,
+  ) => ({
     ...nextState,
     ...definedAutoControlledProps,
   })
@@ -24,13 +31,12 @@ const useStateManager = <S, A, P extends Partial<S>, C extends keyof S & string>
   const [, setState] = React.useState()
   const syncState = React.useCallback(({ state }) => setState(state), [])
 
-  const latestManager = React.useRef<Manager<S, A> | null>(null)
+  const latestManager = React.useRef<Manager<State, Actions> | null>(null)
   const manager = React.useMemo(() => {
     console.log('Manager', latestManager)
     const initialState = latestManager.current
       ? { ...latestManager.current, ...definedAutoControlledProps }
       : getInitialAutoControlledState(
-          component,
           /* TODO: fix types */
           // @ts-ignore
           autoControlledProps,
