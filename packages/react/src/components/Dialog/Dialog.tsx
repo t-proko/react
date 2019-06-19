@@ -123,7 +123,6 @@ const Dialog: React.FC<DialogProps> = props => {
       },
       close: e => this.handleDialogCancel(e), // What we can do?
     },
-    focusZoneRef: null,
   })
 
   console.log('render:', props.open)

@@ -29,28 +29,17 @@ const useStardust = <P = {}>(
     focusZoneRef,
   } = config
 
-  // TODO :O OMG
-  let result = {}
+  const result = renderComponent<P>({
+    className,
+    displayName,
+    handledProps,
+    props,
+    state,
+    actionHandlers,
+    focusZoneRef,
+    context: context as any,
+  })
 
-  renderComponent(
-    {
-      className,
-      displayName,
-      handledProps,
-      props,
-      state,
-      actionHandlers,
-      focusZoneRef,
-      render: config => {
-        // TODO :O OMG
-        result = config
-      },
-    },
-    // TODO: :/
-    context as any,
-  )
-
-  // TODO :O OMG
   return { ...result, manager }
 }
 
